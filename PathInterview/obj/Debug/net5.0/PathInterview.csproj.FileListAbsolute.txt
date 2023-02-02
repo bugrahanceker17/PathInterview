@@ -66,3 +66,8 @@ C:\Users\bugra\RiderProjects\PathInterview\PathInterview\obj\Debug\net5.0\PathIn
 C:\Users\bugra\RiderProjects\PathInterview\PathInterview\obj\Debug\net5.0\ref\PathInterview.dll
 C:\Users\bugra\RiderProjects\PathInterview\PathInterview\obj\Debug\net5.0\PathInterview.pdb
 C:\Users\bugra\RiderProjects\PathInterview\PathInterview\obj\Debug\net5.0\PathInterview.genruntimeconfig.cache
+C:\Users\bugra\RiderProjects\PathInterview\PathInterview\bin\Debug\net5.0\Microsoft.OpenApi.dll
+C:\Users\bugra\RiderProjects\PathInterview\PathInterview\bin\Debug\net5.0\Swashbuckle.AspNetCore.Swagger.dll
+C:\Users\bugra\RiderProjects\PathInterview\PathInterview\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerGen.dll
+C:\Users\bugra\RiderProjects\PathInterview\PathInterview\bin\Debug\net5.0\Swashbuckle.AspNetCore.SwaggerUI.dll
+C:\Users\bugra\RiderProjects\PathInterview\PathInterview\obj\Debug\net5.0\PathInterview.MvcApplicationPartsAssemblyInfo.cs

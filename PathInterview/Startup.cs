@@ -6,6 +6,7 @@ using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using PathInterview.Core.Extensions;
 
 namespace PathInterview
 {
@@ -54,7 +55,7 @@ namespace PathInterview
             services.AddCors(options => 
                 options.AddDefaultPolicy(builder => builder.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin()));
             
-            // services.SwaggerRegister("MsInfra-WebService", "v1");
+            services.SwaggerRegister("Path-Interview", "v1");
         }
         
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -66,7 +67,7 @@ namespace PathInterview
 
             app.UseCors();
 
-            // app.SwaggerConfigure("MsInfra-WebService", "v1");
+            app.SwaggerConfigure("Path-Interview", "v1");
 
             app.UseHsts();
 
