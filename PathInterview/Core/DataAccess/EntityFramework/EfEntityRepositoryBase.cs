@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Threading.Tasks;
+using EFCore.BulkExtensions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.ChangeTracking;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace PathInterview.Core.DataAccess.EntityFramework
 {
@@ -16,6 +18,28 @@ namespace PathInterview.Core.DataAccess.EntityFramework
             EntityEntry<TEntity> addedEntity = context.Entry(entity);
             addedEntity.State = EntityState.Added;
             return await context.SaveChangesAsync();
+        }
+        
+        public async Task<int> BulkAdd(List<TEntity> entities)
+        {
+            int result;
+
+            await using TContext context = new TContext();
+            IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
+           
+            Task addedEntity = context.BulkInsertAsync(entities);
+            if (addedEntity.IsCompleted)
+            {
+                result = 1;
+                await transaction.CommitAsync();
+            }
+            else
+            {
+                result = 0;
+                await transaction.RollbackAsync();
+            }
+            
+            return result;
         }
 
         public async Task<int> Delete(TEntity entity)

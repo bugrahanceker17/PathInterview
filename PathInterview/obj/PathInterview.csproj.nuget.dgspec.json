@@ -48,6 +48,10 @@
               "target": "Package",
               "version": "[11.0.0, )"
             },
+            "EFCore.BulkExtensions": {
+              "target": "Package",
+              "version": "[5.0.1, )"
+            },
             "Microsoft.AspNetCore.Authentication.JwtBearer": {
               "target": "Package",
               "version": "[5.0.17, )"
@@ -86,7 +90,7 @@
             },
             "Microsoft.IdentityModel.JsonWebTokens": {
               "target": "Package",
-              "version": "[6.7.1, )"
+              "version": "[6.8.0, )"
             },
             "Microsoft.OpenApi": {
               "target": "Package",
