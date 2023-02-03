@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using PathInterview.Core.Result;
+using PathInterview.Entities.Dto.Order.Request;
 using PathInterview.Infrastructure.Abstract.Service;
 
 namespace PathInterview.Controller
@@ -29,6 +30,30 @@ namespace PathInterview.Controller
         public async Task<IActionResult> OrderListAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
             DataResult dataResult = await _orderService.OrderListAsync(page, pageSize);
+            return dataResult.HttpResponse();
+        }
+
+        [HttpDelete]
+        [Route("cancel")]
+        public async Task<IActionResult> CancelOrderAsync([FromQuery] string orderId, [FromQuery] int productId)
+        {
+            DataResult dataResult = await _orderService.CancelOrderAsync(orderId, productId);
+            return dataResult.HttpResponse();
+        }
+        
+        [HttpGet]
+        [Route("cancel-requests")]
+        public async Task<IActionResult> OrderCancelRequestAsync()
+        {
+            DataResult dataResult = await _orderService.OrderCancelRequestAsync();
+            return dataResult.HttpResponse();
+        }
+
+        [HttpPost]
+        [Route("confirm-cancel-request")]
+        public async Task<IActionResult> ConfirmRequestAsync([FromBody] ConfirmCancelRequest model)
+        {
+            DataResult dataResult = await _orderService.ConfirmRequestAsync(model);
             return dataResult.HttpResponse();
         }
     }

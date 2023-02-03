@@ -6,6 +6,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Http;
 using PathInterview.Core.Extensions;
 using PathInterview.Core.Result;
+using PathInterview.Entities.Dto.Order.Request;
 using PathInterview.Entities.Dto.Order.Response;
 using PathInterview.Entities.Entity;
 using PathInterview.Entities.Enums;
@@ -116,13 +117,116 @@ namespace PathInterview.Infrastructure.Concrete.Service
                     _mapper.Map<OrderListResponse>(item)
                 ).ToList();
 
-                dataResult.Data = response.GroupBy(c => c.OrderId).Select(c=>new
+                dataResult.Data = response.GroupBy(c => c.OrderId).Select(c => new
                 {
                     OrderId = c.Key,
                     Details = c
                 });
             }
 
+            return dataResult;
+        }
+
+        public async Task<DataResult> CancelOrderAsync(string orderId, int productId)
+        {
+            DataResult dataResult = new();
+
+            (bool login, string message) = _httpContextAccessor.LoginExists();
+
+            if (!login)
+            {
+                dataResult.ErrorMessageList.Add(message);
+                return dataResult;
+            }
+
+            string userId = _httpContextAccessor.AccessToken().userId;
+
+            OrderListResponse order = await _orderQuery.DetailOrder(orderId, productId, userId);
+
+            if (order is null)
+            {
+                dataResult.ErrorMessageList.Add("Sipariş içindeki ürün bulunamadı");
+                return dataResult;
+            }
+
+            string info = string.Empty;
+
+            Order orderUpdateModel = await _orderQuery.Get(c => c.Id.Equals(order.Id));
+
+            if (order.CategoryId.Equals(1))
+            {
+                orderUpdateModel.IsCancellationConfirmed = true;
+                orderUpdateModel.DeliveryStatus = (short)DeliveryStatus.IPTAL_EDILDI;
+
+                info = "Sipariş iptal gerçekleşti";
+            }
+            else
+            {
+                orderUpdateModel.IsCanceledRequest = true;
+                info = "Sipariş iptali için onaya gönderildi";
+            }
+
+            int execute = await _orderQuery.Update(orderUpdateModel);
+
+            if (execute > 0)
+            {
+                dataResult.Data = info;
+                return dataResult;
+            }
+
+            dataResult.ErrorMessageList.Add("Sipariş iptal işlemi başarısız");
+            return dataResult;
+        }
+
+        public async Task<DataResult> OrderCancelRequestAsync()
+        {
+            DataResult dataResult = new();
+
+            List<Order> list = await _orderQuery.GetAll(c => c.IsCanceledRequest && !c.IsCancellationConfirmed && c.IsStatus);
+
+            if (list.Any())
+            {
+                List<OrderListResponse> response = list.Select(item =>
+                    _mapper.Map<OrderListResponse>(item)
+                ).ToList();
+
+                dataResult.Data = response;
+            }
+
+            return dataResult;
+        }
+
+        public async Task<DataResult> ConfirmRequestAsync(ConfirmCancelRequest model)
+        {
+            DataResult dataResult = new();
+
+            Order order = await _orderQuery.Get(c => c.Id.Equals(model.Id) && c.IsCanceledRequest);
+
+            if (order is null)
+            {
+                dataResult.ErrorMessageList.Add("Sipariş bulunamadı");
+                return dataResult;
+            }
+
+            if (model.IsConfirm)
+            {
+                order.IsCancellationConfirmed = true;
+                order.IsStatus = false;
+            }
+            else
+            {
+                order.IsCanceledRequest = false;
+            }
+
+            int execute = await _orderQuery.Update(order);
+
+            if (execute > 0)
+            {
+                dataResult.Data = "İşlem başarılı";
+                return dataResult;
+            }
+            
+            dataResult.ErrorMessageList.Add("Onaylama/Reddetme sırasında hata oluştu");
             return dataResult;
         }
     }
