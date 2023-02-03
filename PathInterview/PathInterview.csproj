@@ -6,10 +6,8 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Controller" />
-        <Folder Include="DataAccess" />
-        <Folder Include="Entities" />
-        <Folder Include="Infrastructure" />
+        <Folder Include="Infrastructure\Abstract\WriteRepository" />
+        <Folder Include="Infrastructure\Concrete\WriteRepository" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.7.1" />
         <PackageReference Include="Microsoft.OpenApi" Version="1.6.0" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.2-beta2" />
