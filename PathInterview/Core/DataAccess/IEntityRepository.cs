@@ -9,8 +9,8 @@ namespace PathInterview.Core.DataAccess
     {
         Task<List<T>> GetAll(Expression<Func<T, bool>> filter = null);
         Task<T> Get(Expression<Func<T, bool>> filter);
-        void Add(T entity);
-        void Update(T entity);
-        void Delete(T entity);
+        Task<int> Add(T entity);
+        Task<int> Update(T entity);
+        Task<int> Delete(T entity);
     }
 }

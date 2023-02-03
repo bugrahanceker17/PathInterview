@@ -1,9 +1,11 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using System.Security.Claims;
+using AutoMapper;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +16,8 @@ using PathInterview.Core.Security;
 using PathInterview.Core.Security.Encryption;
 using PathInterview.DataAccess.Concrete;
 using PathInterview.DataAccess.DataSeeding;
+using PathInterview.Entities.Dto.Basket.Request;
+using PathInterview.Entities.Dto.Basket.Response;
 using PathInterview.Entities.Entity;
 using PathInterview.Infrastructure.Abstract.Query;
 using PathInterview.Infrastructure.Abstract.Service;
@@ -25,24 +29,34 @@ namespace PathInterview
     public class Startup
     {
         private IConfiguration Configuration { get; }
-        
+
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
         }
+
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllers();
 
             services.AddHttpContextAccessor();
 
-            services.AddAutoMapper(typeof(Startup));
+            // services.AddAutoMapper(typeof(Startup));
+
+            MapperConfiguration configuration = new MapperConfiguration(cfg =>
+            {
+                cfg.CreateMap<AddBasketRequest, Basket>().ReverseMap();
+            });
+
+            services.AutoMapperConfig(configuration);
 
             services.AddDbContext<ProjectDbContext>();
 
-            services.AddSingleton<IAuthQuery, AuthQuery>();
             services.AddTransient<IAuthService, AuthService>();
+            services.AddSingleton<IAuthQuery, AuthQuery>();
             services.AddSingleton<ITokenHelper, JwtHelper>();
+            services.AddSingleton<IBasketService, BasketService>();
+            services.AddSingleton<IBasketQuery, BasketQuery>();
 
             services.AddIdentity<User, IdentityRole>(_ =>
                 {
@@ -52,7 +66,7 @@ namespace PathInterview
                     _.User.RequireUniqueEmail = true;
                 })
                 .AddEntityFrameworkStores<ProjectDbContext>();
-            
+
             TokenOptionsModel tokenOptions = Configuration.GetSection("TokenOptions").Get<TokenOptionsModel>();
 
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)

@@ -10,20 +10,20 @@ namespace PathInterview.Core.DataAccess.EntityFramework
 {
     public class EfEntityRepositoryBase<TEntity, TContext> where TEntity : class, new() where TContext : DbContext, new()
     {
-        public async void Add(TEntity entity)
+        public async Task<int> Add(TEntity entity)
         {
             await using TContext context = new TContext();
             EntityEntry<TEntity> addedEntity = context.Entry(entity);
             addedEntity.State = EntityState.Added;
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
 
-        public async void Delete(TEntity entity)
+        public async Task<int> Delete(TEntity entity)
         {
             await using TContext context = new TContext();
             EntityEntry<TEntity> deletedEntity = context.Entry(entity);
             deletedEntity.State = EntityState.Deleted;
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
 
         public async Task<TEntity> Get(Expression<Func<TEntity, bool>> filter)
@@ -32,18 +32,18 @@ namespace PathInterview.Core.DataAccess.EntityFramework
             return await context.Set<TEntity>().SingleOrDefaultAsync(filter);
         }
 
-        public Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter = null)
+        public async Task<List<TEntity>> GetAll(Expression<Func<TEntity, bool>> filter = null)
         {
-            using TContext context = new TContext();
-            return filter == null ? context.Set<TEntity>().ToListAsync() : context.Set<TEntity>().Where(filter).ToListAsync();
+            await using TContext context = new TContext();
+            return filter == null ? context.Set<TEntity>().ToList() : context.Set<TEntity>().Where(filter).ToList();
         }
 
-        public async void Update(TEntity entity)
+        public async Task<int> Update(TEntity entity)
         {
             await using TContext context = new TContext();
             EntityEntry<TEntity> updatedEntity = context.Entry(entity);
             updatedEntity.State = EntityState.Modified;
-            await context.SaveChangesAsync();
+            return await context.SaveChangesAsync();
         }
     }
 }
