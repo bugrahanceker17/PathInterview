@@ -78,12 +78,9 @@ namespace PathInterview.Infrastructure.Concrete.Service
 
             if (list.Any())
             {
-                List<BasketListResponse> response = list.Select(c => new BasketListResponse()
-                {
-                    ProductId = c.ProductId,
-                    Quantity = c.Quantity,
-                    CreatedAt = c.CreatedAt
-                }).ToList();
+                List<BasketListResponse> response = list.Select(item =>
+                    _mapper.Map<BasketListResponse>(item)
+                ).ToList();
 
                 dataResult.Data = response;
                 dataResult.Total = response.Count;

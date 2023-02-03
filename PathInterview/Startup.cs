@@ -41,11 +41,10 @@ namespace PathInterview
 
             services.AddHttpContextAccessor();
 
-            // services.AddAutoMapper(typeof(Startup));
-
             MapperConfiguration configuration = new MapperConfiguration(cfg =>
             {
                 cfg.CreateMap<AddBasketRequest, Basket>().ReverseMap();
+                cfg.CreateMap<Basket, BasketListResponse>().ReverseMap();
             });
 
             services.AutoMapperConfig(configuration);
@@ -57,6 +56,8 @@ namespace PathInterview
             services.AddSingleton<ITokenHelper, JwtHelper>();
             services.AddSingleton<IBasketService, BasketService>();
             services.AddSingleton<IBasketQuery, BasketQuery>();
+            services.AddSingleton<IOrderService, OrderService>();
+            services.AddSingleton<IOrderQuery, OrderQuery>();
 
             services.AddIdentity<User, IdentityRole>(_ =>
                 {
@@ -122,7 +123,6 @@ namespace PathInterview
             }
 
             app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
-            // app.UseEndpoints(endpoints => { endpoints.MapGet("/", async context => { await context.Response.WriteAsync("Hello World!"); }); });
         }
     }
 }
