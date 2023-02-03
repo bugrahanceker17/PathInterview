@@ -17,11 +17,19 @@ namespace PathInterview.Controller
         }
 
         [HttpPost]
+        [Route("add")]
         public async Task<IActionResult> AddOrderAsync()
         {
             DataResult dataResult = await _orderService.AddOrderAsync();
             return dataResult.HttpResponse();
         }
+
+        [HttpGet]
+        [Route("list")]
+        public async Task<IActionResult> OrderListAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        {
+            DataResult dataResult = await _orderService.OrderListAsync(page, pageSize);
+            return dataResult.HttpResponse();
+        }
     }
 }
-

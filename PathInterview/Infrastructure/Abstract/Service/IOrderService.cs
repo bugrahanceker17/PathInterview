@@ -10,6 +10,14 @@ namespace PathInterview.Infrastructure.Abstract.Service
         /// </summary>
         /// <returns></returns>
         Task<DataResult> AddOrderAsync();
+
+        /// <summary>
+        /// Müşteri sipariş listesini getirir
+        /// </summary>
+        /// <param name="page"></param>
+        /// <param name="pageSize"></param>
+        /// <returns></returns>
+        Task<DataResult> OrderListAsync(int page, int pageSize);
     }
 }
 

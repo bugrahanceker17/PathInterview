@@ -6,7 +6,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <Folder Include="Entities\Dto\Order" />
         <PackageReference Include="EFCore.BulkExtensions" Version="5.0.1" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.8.0" />
         <PackageReference Include="Microsoft.OpenApi" Version="1.6.0" />

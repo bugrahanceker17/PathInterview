@@ -19,16 +19,15 @@ namespace PathInterview.Core.DataAccess.EntityFramework
             addedEntity.State = EntityState.Added;
             return await context.SaveChangesAsync();
         }
-        
+
         public async Task<int> BulkAdd(List<TEntity> entities)
         {
-            int result;
+            int result = 0;
 
-            await using TContext context = new TContext();
-            IDbContextTransaction transaction = await context.Database.BeginTransactionAsync();
-           
-            Task addedEntity = context.BulkInsertAsync(entities);
-            if (addedEntity.IsCompleted)
+            TContext context = new TContext();
+            using IDbContextTransaction transaction = context.Database.BeginTransaction();
+            Task response = context.BulkInsertAsync(entities);
+            if (response.IsCompletedSuccessfully)
             {
                 result = 1;
                 await transaction.CommitAsync();
@@ -38,7 +37,7 @@ namespace PathInterview.Core.DataAccess.EntityFramework
                 result = 0;
                 await transaction.RollbackAsync();
             }
-            
+
             return result;
         }
 
@@ -60,6 +59,14 @@ namespace PathInterview.Core.DataAccess.EntityFramework
         {
             await using TContext context = new TContext();
             return filter == null ? context.Set<TEntity>().ToList() : context.Set<TEntity>().Where(filter).ToList();
+        }
+
+        public async Task<List<TEntity>> GetAllPagination(int page, int pageSize, Expression<Func<TEntity, bool>> filter = null)
+        {
+            await using TContext context = new TContext();
+            return filter == null
+                ? context.Set<TEntity>().Skip((page - 1) * pageSize).Take(pageSize).ToList()
+                : context.Set<TEntity>().Where(filter).Skip((page - 1) * pageSize).Take(pageSize).ToList();
         }
 
         public async Task<int> Update(TEntity entity)
