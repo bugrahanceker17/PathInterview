@@ -13,6 +13,7 @@ using PathInterview.Core.Extensions;
 using PathInterview.Core.Security;
 using PathInterview.Core.Security.Encryption;
 using PathInterview.DataAccess.Concrete;
+using PathInterview.DataAccess.DataSeeding;
 using PathInterview.Entities.Entity;
 using PathInterview.Infrastructure.Abstract.Query;
 using PathInterview.Infrastructure.Abstract.Service;
@@ -84,6 +85,7 @@ namespace PathInterview
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
+                DataSeeding.Seed(app);
             }
 
             app.UseCors();

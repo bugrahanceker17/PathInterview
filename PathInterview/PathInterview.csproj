@@ -6,6 +6,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Folder Include="Entities\Enums" />
         <Folder Include="Infrastructure\Abstract\WriteRepository" />
         <Folder Include="Infrastructure\Concrete\WriteRepository" />
         <PackageReference Include="Microsoft.IdentityModel.JsonWebTokens" Version="6.7.1" />
