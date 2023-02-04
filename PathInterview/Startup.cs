@@ -51,6 +51,11 @@ namespace PathInterview
 
             services.AutoMapperConfig(configuration);
 
+            services.AddStackExchangeRedisCache(opt =>
+            {
+                opt.Configuration = Configuration.GetValue<string>("Redis:ConnectionString");
+            });
+
             services.AddDbContext<ProjectDbContext>();
 
             services.AddTransient<IAuthService, AuthService>();

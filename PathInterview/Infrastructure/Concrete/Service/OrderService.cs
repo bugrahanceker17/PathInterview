@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.Caching.Distributed;
+using Newtonsoft.Json;
 using PathInterview.Core.Extensions;
 using PathInterview.Core.Result;
 using PathInterview.Entities.Dto.Order.Request;
@@ -20,14 +23,16 @@ namespace PathInterview.Infrastructure.Concrete.Service
         private readonly IOrderQuery _orderQuery;
         private readonly IHttpContextAccessor _httpContextAccessor;
         private readonly IBasketQuery _basketQuery;
+        private readonly IDistributedCache _distributedCache;
         private readonly IMapper _mapper;
 
-        public OrderService(IOrderQuery orderQuery, IBasketQuery basketQuery, IHttpContextAccessor httpContextAccessor, IMapper mapper)
+        public OrderService(IOrderQuery orderQuery, IBasketQuery basketQuery, IHttpContextAccessor httpContextAccessor, IMapper mapper, IDistributedCache distributedCache)
         {
             _orderQuery = orderQuery;
             _basketQuery = basketQuery;
             _httpContextAccessor = httpContextAccessor;
             _mapper = mapper;
+            _distributedCache = distributedCache;
         }
 
 
@@ -109,7 +114,22 @@ namespace PathInterview.Infrastructure.Concrete.Service
 
             string userId = _httpContextAccessor.AccessToken().userId;
 
-            var list = await _orderQuery.GetOrders(page, pageSize, userId);
+            string cacheName = $"orderList-{userId}";
+
+            string cache = await _distributedCache.GetStringAsync(cacheName);
+            List<OrderListResponse> list = new List<OrderListResponse>();
+
+            if (!string.IsNullOrEmpty(cache))
+            {
+                list = JsonConvert.DeserializeObject<List<OrderListResponse>>(Convert.ToString(cache) ?? "");
+            }
+            else
+            {
+                list = await _orderQuery.GetOrders(page, pageSize, userId);
+
+                await _distributedCache.SetStringAsync(cacheName, JsonConvert.SerializeObject(list),
+                    new DistributedCacheEntryOptions().SetSlidingExpiration(TimeSpan.FromMinutes(10)));
+            }
 
             if (list.Any())
             {
@@ -225,7 +245,7 @@ namespace PathInterview.Infrastructure.Concrete.Service
                 dataResult.Data = "İşlem başarılı";
                 return dataResult;
             }
-            
+
             dataResult.ErrorMessageList.Add("Onaylama/Reddetme sırasında hata oluştu");
             return dataResult;
         }
