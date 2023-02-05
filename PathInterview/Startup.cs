@@ -19,6 +19,7 @@ using PathInterview.DataAccess.DataSeeding;
 using PathInterview.Entities.Dto.Basket.Request;
 using PathInterview.Entities.Dto.Basket.Response;
 using PathInterview.Entities.Dto.Order.Response;
+using PathInterview.Entities.Dto.Product.Response;
 using PathInterview.Entities.Entity;
 using PathInterview.Infrastructure.Abstract.Query;
 using PathInterview.Infrastructure.Abstract.Service;
@@ -47,6 +48,7 @@ namespace PathInterview
                 cfg.CreateMap<AddBasketRequest, Basket>().ReverseMap();
                 cfg.CreateMap<Basket, BasketListResponse>().ReverseMap();
                 cfg.CreateMap<Order, OrderListResponse>().ReverseMap();
+                cfg.CreateMap<Product, ProductListResponse>().ReverseMap();
             });
 
             services.AutoMapperConfig(configuration);
@@ -65,6 +67,8 @@ namespace PathInterview
             services.AddSingleton<IBasketQuery, BasketQuery>();
             services.AddSingleton<IOrderService, OrderService>();
             services.AddSingleton<IOrderQuery, OrderQuery>();
+            services.AddSingleton<IProductQuery, ProductQuery>();
+            services.AddSingleton<IProductService, ProductService>();
 
             services.AddIdentity<User, IdentityRole>(_ =>
                 {
