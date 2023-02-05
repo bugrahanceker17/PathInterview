@@ -22,21 +22,10 @@ namespace PathInterview.Core.DataAccess.EntityFramework
 
         public async Task<int> BulkAdd(List<TEntity> entities)
         {
-            int result = 0;
-
             TContext context = new TContext();
-            using IDbContextTransaction transaction = context.Database.BeginTransaction();
             Task response = context.BulkInsertAsync(entities);
-            if (response.IsCompletedSuccessfully)
-            {
-                result = 1;
-                await transaction.CommitAsync();
-            }
-            else
-            {
-                result = 0;
-                await transaction.RollbackAsync();
-            }
+            
+            int result = response.IsCompletedSuccessfully ? 1 : 0;
 
             return result;
         }

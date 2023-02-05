@@ -77,16 +77,18 @@ namespace PathInterview.Infrastructure.Concrete.Service
                     DeliveryStatus = (short)DeliveryStatus.SIPARIS_ALINDI
                 };
 
-                bulkInsertModel.Add(entity);
+                int execute = await _orderQuery.Add(entity);
+                
+                if (execute <= 0)
+                {
+                    dataResult.ErrorMessageList.Add("Sipariş verilemedi");
+                    return dataResult;
+                }
+
+                // bulkInsertModel.Add(entity);
             }
 
-            int execute = await _orderQuery.BulkAdd(bulkInsertModel);
-
-            if (execute <= 0)
-            {
-                dataResult.ErrorMessageList.Add("Sipariş verilemedi");
-                return dataResult;
-            }
+            // int execute = await _orderQuery.BulkAdd(bulkInsertModel);
 
             basketList.ForEach(Action);
 
@@ -150,6 +152,12 @@ namespace PathInterview.Infrastructure.Concrete.Service
         public async Task<DataResult> CancelOrderAsync(string orderId, int productId)
         {
             DataResult dataResult = new();
+
+            if (string.IsNullOrEmpty(orderId) || productId <= 0)
+            {
+                dataResult.ErrorMessageList.Add("Model hatalı");
+                return dataResult;
+            }
 
             (bool login, string message) = _httpContextAccessor.LoginExists();
 
@@ -219,6 +227,12 @@ namespace PathInterview.Infrastructure.Concrete.Service
         public async Task<DataResult> ConfirmRequestAsync(ConfirmCancelRequest model)
         {
             DataResult dataResult = new();
+
+            if (model.Id <= 0)
+            {
+                dataResult.ErrorMessageList.Add("Sipariş bilgisi hatalı");
+                return dataResult;
+            }
 
             Order order = await _orderQuery.Get(c => c.Id.Equals(model.Id) && c.IsCanceledRequest);
 

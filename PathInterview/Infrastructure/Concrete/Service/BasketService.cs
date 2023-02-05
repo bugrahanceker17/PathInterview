@@ -31,6 +31,12 @@ namespace PathInterview.Infrastructure.Concrete.Service
         {
             DataResult dataResult = new();
 
+            if (model.ProductId <= 0 || model.Quantity <= 0)
+            {
+                dataResult.ErrorMessageList.Add("Model hatalı");
+                return dataResult;
+            }
+
             (bool login, string message) = _httpContextAccessor.LoginExists();
 
             if (!login)
